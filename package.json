@@ -1,0 +1,32 @@
+{
+  "name": "length-prefixed-stream",
+  "version": "0.0.0",
+  "description": "Streaming length prefixed buffers",
+  "main": "index.js",
+  "dependencies": {
+    "varint": "^3.0.1"
+  },
+  "devDependencies": {
+    "tape": "^2.14.0"
+  },
+  "scripts": {
+    "test": "tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/length-prefixed-stream"
+  },
+  "keywords": [
+    "varint",
+    "length",
+    "prefixed",
+    "stream",
+    "streaming"
+  ],
+  "author": "Mathias Buus",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/length-prefixed-stream/issues"
+  },
+  "homepage": "https://github.com/mafintosh/length-prefixed-stream"
+}
