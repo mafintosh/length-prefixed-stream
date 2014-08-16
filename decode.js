@@ -52,6 +52,9 @@ Decoder.prototype._parseMessage = function(data, offset) {
     return offset+missing
   }
 
+  this._missing -= free
+  this._ptr += free
+
   return data.length
 }
 
