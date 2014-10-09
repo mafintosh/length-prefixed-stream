@@ -1,5 +1,6 @@
 var tape = require('tape')
 var through = require('through2')
+var concat = require('concat-stream')
 var lpstream = require('./')
 
 var chunk = function(ultra) {
@@ -25,6 +26,23 @@ tape('encode -> decode', function(t) {
 
   e.write('hello world')
   e.pipe(d)
+})
+
+tape('buffered encode -> buffered decode', function(t) {
+  var e = lpstream.encode()
+  var d = lpstream.decode()
+
+  d.on('data', function(data) {
+    t.same(data.toString(), 'hello world')
+    t.end()
+  })
+
+  e.write('hello world')
+  e.end()
+
+  e.pipe(concat(function(data) {
+    d.end(data)
+  }))
 })
 
 tape('encode -> decode twice', function(t) {
