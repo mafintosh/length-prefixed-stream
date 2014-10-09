@@ -39,7 +39,7 @@ Decoder.prototype._parseMessage = function(data, offset) {
 
   if (!this._message) {
     if (missing <= free) { // fast track - no copy
-      this._push(data.slice(offset, missing))
+      this._push(data.slice(offset, offset+missing))
       return offset+missing
     }
     this._message = new Buffer(missing)
