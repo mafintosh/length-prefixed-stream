@@ -1,5 +1,5 @@
 var varint = require('varint')
-var stream = require('stream')
+var stream = require('readable-stream')
 var util = require('util')
 
 var Decoder = function() {
