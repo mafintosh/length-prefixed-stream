@@ -4,7 +4,7 @@
   "description": "Streaming length prefixed buffers",
   "main": "index.js",
   "dependencies": {
-    "readable-stream": "^1.0.33",
+    "readable-stream": "^1.1.13",
     "varint": "^3.0.1"
   },
   "devDependencies": {
