@@ -3,11 +3,10 @@ var through = require('through2')
 var concat = require('concat-stream')
 var lpstream = require('./')
 
-var chunk = function(ultra) {
-  return through(function(data, enc, cb) {
-
+var chunk = function (ultra) {
+  return through(function (data, enc, cb) {
     while (data.length) {
-      var chunk = data.slice(0, ultra ? 1 : 1+((Math.random() * data.length) | 0))
+      var chunk = data.slice(0, ultra ? 1 : 1 + ((Math.random() * data.length) | 0))
       this.push(chunk)
       data = data.slice(chunk.length)
     }
@@ -15,11 +14,11 @@ var chunk = function(ultra) {
   })
 }
 
-tape('encode -> decode', function(t) {
+tape('encode -> decode', function (t) {
   var e = lpstream.encode()
   var d = lpstream.decode()
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data.toString(), 'hello world')
     t.end()
   })
@@ -28,11 +27,11 @@ tape('encode -> decode', function(t) {
   e.pipe(d)
 })
 
-tape('buffered encode -> buffered decode', function(t) {
+tape('buffered encode -> buffered decode', function (t) {
   var e = lpstream.encode()
   var d = lpstream.decode()
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data.toString(), 'hello world')
     t.end()
   })
@@ -40,12 +39,12 @@ tape('buffered encode -> buffered decode', function(t) {
   e.write('hello world')
   e.end()
 
-  e.pipe(concat(function(data) {
+  e.pipe(concat(function (data) {
     d.end(data)
   }))
 })
 
-tape('encode -> decode twice', function(t) {
+tape('encode -> decode twice', function (t) {
   t.plan(2)
 
   var e = lpstream.encode()
@@ -53,7 +52,7 @@ tape('encode -> decode twice', function(t) {
 
   var expects = ['hello world', 'hola mundo']
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data.toString(), expects.shift())
   })
 
@@ -62,7 +61,7 @@ tape('encode -> decode twice', function(t) {
   e.pipe(d)
 })
 
-tape('encode -> decode storm', function(t) {
+tape('encode -> decode storm', function (t) {
   t.plan(50)
 
   var e = lpstream.encode()
@@ -73,22 +72,22 @@ tape('encode -> decode storm', function(t) {
     expects.push(new Buffer(50))
   }
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data, expects.shift())
   })
 
-  expects.forEach(function(b) {
+  expects.forEach(function (b) {
     e.write(b)
   })
 
   e.pipe(d)
 })
 
-tape('chunked encode -> decode', function(t) {
+tape('chunked encode -> decode', function (t) {
   var e = lpstream.encode()
   var d = lpstream.decode()
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data.toString(), 'hello world')
     t.end()
   })
@@ -97,7 +96,7 @@ tape('chunked encode -> decode', function(t) {
   e.pipe(chunk()).pipe(d)
 })
 
-tape('chunked encode -> decode twice', function(t) {
+tape('chunked encode -> decode twice', function (t) {
   t.plan(2)
 
   var e = lpstream.encode()
@@ -105,7 +104,7 @@ tape('chunked encode -> decode twice', function(t) {
 
   var expects = ['hello world', 'hola mundo']
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data.toString(), expects.shift())
   })
 
@@ -114,7 +113,7 @@ tape('chunked encode -> decode twice', function(t) {
   e.pipe(chunk()).pipe(d)
 })
 
-tape('chunked encode -> decode storm', function(t) {
+tape('chunked encode -> decode storm', function (t) {
   t.plan(50)
 
   var e = lpstream.encode()
@@ -125,22 +124,22 @@ tape('chunked encode -> decode storm', function(t) {
     expects.push(new Buffer(50))
   }
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data, expects.shift())
   })
 
-  expects.forEach(function(b) {
+  expects.forEach(function (b) {
     e.write(b)
   })
 
   e.pipe(chunk()).pipe(d)
 })
 
-tape('ultra chunked encode -> decode', function(t) {
+tape('ultra chunked encode -> decode', function (t) {
   var e = lpstream.encode()
   var d = lpstream.decode()
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data.toString(), 'hello world')
     t.end()
   })
@@ -149,7 +148,7 @@ tape('ultra chunked encode -> decode', function(t) {
   e.pipe(chunk(true)).pipe(d)
 })
 
-tape('ultra chunked encode -> decode twice', function(t) {
+tape('ultra chunked encode -> decode twice', function (t) {
   t.plan(2)
 
   var e = lpstream.encode()
@@ -157,7 +156,7 @@ tape('ultra chunked encode -> decode twice', function(t) {
 
   var expects = ['hello world', 'hola mundo']
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data.toString(), expects.shift())
   })
 
@@ -166,7 +165,7 @@ tape('ultra chunked encode -> decode twice', function(t) {
   e.pipe(chunk(true)).pipe(d)
 })
 
-tape('ultra chunked encode -> decode storm', function(t) {
+tape('ultra chunked encode -> decode storm', function (t) {
   t.plan(50)
 
   var e = lpstream.encode()
@@ -177,11 +176,11 @@ tape('ultra chunked encode -> decode storm', function(t) {
     expects.push(new Buffer(50))
   }
 
-  d.on('data', function(data) {
+  d.on('data', function (data) {
     t.same(data, expects.shift())
   })
 
-  expects.forEach(function(b) {
+  expects.forEach(function (b) {
     e.write(b)
   })
 
