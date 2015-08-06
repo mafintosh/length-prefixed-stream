@@ -224,8 +224,13 @@ tape('overflow varint pool', function (t) {
 
   from(read).pipe(e).pipe(d)
 
+  // needed to not blow up in 0.10 :/
+  var nextTick = global.setImmediate || process.nextTick
+
   function read (size, cb) {
-    if (i++ < 4000) return cb(null, buf)
-    cb(null, null)
+    nextTick(function () {
+      if (i++ < 4000) return cb(null, buf)
+      cb(null, null)
+    })
   }
 })
