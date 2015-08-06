@@ -210,7 +210,7 @@ tape('multibyte varints', function (t) {
 })
 
 tape('overflow varint pool', function (t) {
-  t.plan(1001)
+  t.plan(4001)
 
   var buf = new Buffer(64 * 1024)
 
@@ -225,6 +225,6 @@ tape('overflow varint pool', function (t) {
 
   var i = 0
   e.write(buf, function loop (err) {
-    if (i++ < 1000) e.write(buf, loop)
+    if (i++ < 4000) e.write(buf, loop)
   })
 })
