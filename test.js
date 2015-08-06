@@ -1,6 +1,7 @@
 var tape = require('tape')
 var through = require('through2')
 var concat = require('concat-stream')
+var from = require('from2')
 var lpstream = require('./')
 
 var chunk = function (ultra) {
@@ -210,10 +211,10 @@ tape('multibyte varints', function (t) {
 })
 
 tape('overflow varint pool', function (t) {
-  t.plan(4001)
+  t.plan(4000)
 
+  var i = 0
   var buf = new Buffer(64 * 1024)
-
   var e = lpstream.encode()
   var d = lpstream.decode()
 
@@ -221,10 +222,10 @@ tape('overflow varint pool', function (t) {
     t.same(buf, data)
   })
 
-  e.pipe(d)
+  from(read).pipe(e).pipe(d)
 
-  var i = 0
-  e.write(buf, function loop (err) {
-    if (i++ < 4000) e.write(buf, loop)
-  })
+  function read (size, cb) {
+    if (i++ < 4000) return cb(null, buf)
+    cb(null, null)
+  }
 })
