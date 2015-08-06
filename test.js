@@ -186,3 +186,45 @@ tape('ultra chunked encode -> decode storm', function (t) {
 
   e.pipe(chunk(true)).pipe(d)
 })
+
+tape('multibyte varints', function (t) {
+  t.plan(5)
+
+  var e = lpstream.encode()
+  var d = lpstream.decode()
+  var expects = []
+
+  for (var i = 0; i < 5; i++) {
+    expects.push(new Buffer(64 * 1024))
+  }
+
+  d.on('data', function (data) {
+    t.same(data, expects.shift())
+  })
+
+  expects.forEach(function (b) {
+    e.write(b)
+  })
+
+  e.pipe(chunk(true)).pipe(d)
+})
+
+tape('overflow varint pool', function (t) {
+  t.plan(1001)
+
+  var buf = new Buffer(64 * 1024)
+
+  var e = lpstream.encode()
+  var d = lpstream.decode()
+
+  d.on('data', function (data) {
+    t.same(buf, data)
+  })
+
+  e.pipe(d)
+
+  var i = 0
+  e.write(buf, function loop (err) {
+    if (i++ < 1000) e.write(buf, loop)
+  })
+})
