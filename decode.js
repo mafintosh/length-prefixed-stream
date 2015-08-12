@@ -2,13 +2,14 @@ var varint = require('varint')
 var stream = require('readable-stream')
 var util = require('util')
 
-var Decoder = function () {
-  if (!(this instanceof Decoder)) return new Decoder()
+var Decoder = function (opts) {
+  if (!(this instanceof Decoder)) return new Decoder(opts)
   stream.Transform.call(this)
 
   this._missing = 0
   this._message = null
-  this._prefix = new Buffer(100)
+  this._limit = opts && opts.limit || 0
+  this._prefix = new Buffer(this._limit ? varint.encodingLength(this._limit) : 100)
   this._ptr = 0
 }
 
@@ -23,13 +24,20 @@ Decoder.prototype._push = function (message) {
 
 Decoder.prototype._parseLength = function (data, offset) {
   for (offset; offset < data.length; offset++) {
+    if (this._ptr >= this._prefix.length) return this._prefixError(data)
     this._prefix[this._ptr++] = data[offset]
     if (!(data[offset] & 0x80)) {
       this._missing = varint.decode(this._prefix)
+      if (this._limit && this._missing > this._limit) return this._prefixError(data)
       this._ptr = 0
       return offset + 1
     }
   }
+  return data.length
+}
+
+Decoder.prototype._prefixError = function (data) {
+  this.emit('error', new Error('Message is larger than max length'))
   return data.length
 }
 

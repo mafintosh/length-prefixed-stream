@@ -234,3 +234,14 @@ tape('overflow varint pool', function (t) {
     })
   }
 })
+
+tape('message limit', function (t) {
+  var d = lpstream.decode({limit: 10})
+
+  d.on('error', function (err) {
+    t.ok(err, 'should error')
+    t.end()
+  })
+
+  d.write(new Buffer('zzzzzzzzzzzzzz'))
+})

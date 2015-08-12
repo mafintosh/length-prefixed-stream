@@ -26,6 +26,16 @@ decode.on('data', function(data) {
 encode.pipe(decode) // for testing just pipe to our selves
 ```
 
+## API
+
+#### `transformStream = lpstream.encode()`
+
+Creates a new encoder transform stream.
+
+#### `transformStream = lpstream.decode()`
+
+Creates a new decoder transform stream.
+
 ## License
 
 MIT
