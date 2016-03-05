@@ -7,7 +7,7 @@ This module allow you to send buffers with a varint length prefix to ensure that
 npm install length-prefixed-stream
 ```
 
-[![build status](http://img.shields.io/travis/mafintosh/length-prefixed-stream.svg?style=flat)](http://travis-ci.org/mafintosh/length-prefixed-stream)
+[![build status](https://travis-ci.org/mafintosh/length-prefixed-stream.svg?branch=master)](https://travis-ci.org/mafintosh/length-prefixed-stream)
 
 ## Usage
 
