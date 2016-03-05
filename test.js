@@ -246,7 +246,6 @@ tape('message limit', function (t) {
   d.write(new Buffer('zzzzzzzzzzzzzz'))
 })
 
-
 tape('allow empty', function (t) {
   var d = lpstream.decode()
 

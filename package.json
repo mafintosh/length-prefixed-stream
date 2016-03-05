@@ -10,11 +10,12 @@
   "devDependencies": {
     "concat-stream": "^1.4.6",
     "from2": "^2.1.0",
+    "standard": "^6.0.7",
     "tape": "^2.14.0",
     "through2": "^0.6.1"
   },
   "scripts": {
-    "test": "tape test.js"
+    "test": "standard && tape test.js"
   },
   "repository": {
     "type": "git",
