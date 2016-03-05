@@ -245,3 +245,24 @@ tape('message limit', function (t) {
 
   d.write(new Buffer('zzzzzzzzzzzzzz'))
 })
+
+
+tape('allow empty', function (t) {
+  var d = lpstream.decode()
+
+  d.on('data', function () {
+    t.fail('should not emit empty buffers')
+  })
+  d.on('end', function () {
+    d = lpstream.decode({allowEmpty: true})
+    d.on('data', function (data) {
+      t.same(data, Buffer(0), 'empty buffer')
+      t.end()
+    })
+    d.write(Buffer([0]))
+    d.end()
+  })
+
+  d.write(Buffer([0]))
+  d.end()
+})
