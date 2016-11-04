@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "readable-stream": "^2.0.0",
-    "varint": "^4.0.0"
+    "varint": "^5.0.0"
   },
   "devDependencies": {
     "concat-stream": "^1.4.6",
