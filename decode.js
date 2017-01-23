@@ -82,6 +82,17 @@ Decoder.prototype._transform = function (data, enc, cb) {
     else offset = this._parseLength(data, offset)
   }
 
+  if (this._message && this._events.progress) {
+    var total = this._message.length
+    var progress = total - this._missing
+    if (progress) {
+      this.emit('progress', {
+        total: total,
+        progress: progress
+      })
+    }
+  }
+
   cb()
 }
 
