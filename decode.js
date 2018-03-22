@@ -1,6 +1,7 @@
 var varint = require('varint')
 var stream = require('readable-stream')
 var util = require('util')
+var bufferAlloc = require('buffer-alloc')
 
 var Decoder = function (opts) {
   if (!(this instanceof Decoder)) return new Decoder(opts)
@@ -10,7 +11,7 @@ var Decoder = function (opts) {
   this._message = null
   this._limit = opts && opts.limit || 0
   this._allowEmpty = !!(opts && opts.allowEmpty)
-  this._prefix = new Buffer(this._limit ? varint.encodingLength(this._limit) : 100)
+  this._prefix = bufferAlloc(this._limit ? varint.encodingLength(this._limit) : 100)
   this._ptr = 0
 
   if (this._allowEmpty) {
@@ -35,7 +36,7 @@ Decoder.prototype._parseLength = function (data, offset) {
     if (!(data[offset] & 0x80)) {
       this._missing = varint.decode(this._prefix)
       if (this._limit && this._missing > this._limit) return this._prefixError(data)
-      if (!this._missing && this._allowEmpty) this._push(Buffer(0))
+      if (!this._missing && this._allowEmpty) this._push(bufferAlloc(0))
       this._ptr = 0
       return offset + 1
     }
@@ -57,7 +58,7 @@ Decoder.prototype._parseMessage = function (data, offset) {
       this._push(data.slice(offset, offset + missing))
       return offset + missing
     }
-    this._message = new Buffer(missing)
+    this._message = bufferAlloc(missing)
   }
 
   // TODO: add opt-in "partial mode" to completely avoid copys
