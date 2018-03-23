@@ -4,7 +4,7 @@
   "description": "Streaming length prefixed buffers",
   "main": "index.js",
   "dependencies": {
-    "buffer-alloc": "^1.1.0",
+    "buffer-alloc-unsafe": "^1.0.0",
     "readable-stream": "^2.0.0",
     "varint": "^5.0.0"
   },

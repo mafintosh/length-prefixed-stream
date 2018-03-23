@@ -3,7 +3,7 @@ var through = require('through2')
 var concat = require('concat-stream')
 var from = require('from2')
 var lpstream = require('./')
-var bufferAlloc = require('buffer-alloc')
+var bufferAlloc = require('buffer-alloc-unsafe')
 var bufferFrom = require('buffer-from')
 
 var chunk = function (ultra) {
@@ -260,10 +260,10 @@ tape('allow empty', function (t) {
       t.same(data, bufferAlloc(0), 'empty buffer')
       t.end()
     })
-    d.write(bufferAlloc(1))
+    d.write(bufferFrom([0]))
     d.end()
   })
 
-  d.write(bufferAlloc(1))
+  d.write(bufferFrom([0]))
   d.end()
 })
