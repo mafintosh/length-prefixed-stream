@@ -3,6 +3,8 @@ var through = require('through2')
 var concat = require('concat-stream')
 var from = require('from2')
 var lpstream = require('./')
+var bufferAlloc = require('buffer-alloc')
+var bufferFrom = require('buffer-from')
 
 var chunk = function (ultra) {
   return through(function (data, enc, cb) {
@@ -70,7 +72,7 @@ tape('encode -> decode storm', function (t) {
   var expects = []
 
   for (var i = 0; i < 50; i++) {
-    expects.push(new Buffer(50))
+    expects.push(bufferAlloc(50))
   }
 
   d.on('data', function (data) {
@@ -122,7 +124,7 @@ tape('chunked encode -> decode storm', function (t) {
   var expects = []
 
   for (var i = 0; i < 50; i++) {
-    expects.push(new Buffer(50))
+    expects.push(bufferAlloc(50))
   }
 
   d.on('data', function (data) {
@@ -174,7 +176,7 @@ tape('ultra chunked encode -> decode storm', function (t) {
   var expects = []
 
   for (var i = 0; i < 50; i++) {
-    expects.push(new Buffer(50))
+    expects.push(bufferAlloc(50))
   }
 
   d.on('data', function (data) {
@@ -196,7 +198,7 @@ tape('multibyte varints', function (t) {
   var expects = []
 
   for (var i = 0; i < 5; i++) {
-    expects.push(new Buffer(64 * 1024))
+    expects.push(bufferAlloc(64 * 1024))
   }
 
   d.on('data', function (data) {
@@ -214,7 +216,7 @@ tape('overflow varint pool', function (t) {
   t.plan(4000)
 
   var i = 0
-  var buf = new Buffer(64 * 1024)
+  var buf = bufferAlloc(64 * 1024)
   var e = lpstream.encode()
   var d = lpstream.decode()
 
@@ -243,7 +245,7 @@ tape('message limit', function (t) {
     t.end()
   })
 
-  d.write(new Buffer('zzzzzzzzzzzzzz'))
+  d.write(bufferFrom('zzzzzzzzzzzzzz'))
 })
 
 tape('allow empty', function (t) {
@@ -255,13 +257,13 @@ tape('allow empty', function (t) {
   d.on('end', function () {
     d = lpstream.decode({allowEmpty: true})
     d.on('data', function (data) {
-      t.same(data, Buffer(0), 'empty buffer')
+      t.same(data, bufferAlloc(0), 'empty buffer')
       t.end()
     })
-    d.write(Buffer([0]))
+    d.write(bufferAlloc(1))
     d.end()
   })
 
-  d.write(Buffer([0]))
+  d.write(bufferAlloc(1))
   d.end()
 })

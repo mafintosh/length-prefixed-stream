@@ -1,8 +1,9 @@
 var varint = require('varint')
 var stream = require('readable-stream')
 var util = require('util')
+var bufferAlloc = require('buffer-alloc')
 
-var pool = new Buffer(10 * 1024)
+var pool = bufferAlloc(10 * 1024)
 var used = 0
 
 var Encoder = function () {
@@ -20,7 +21,7 @@ Encoder.prototype._transform = function (data, enc, cb) {
   this.push(data)
 
   if (pool.length - used < 100) {
-    pool = new Buffer(10 * 1024)
+    pool = bufferAlloc(10 * 1024)
     used = 0
   }
 
