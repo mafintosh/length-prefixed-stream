@@ -7,6 +7,7 @@ var Decoder = function (opts) {
   if (!(this instanceof Decoder)) return new Decoder(opts)
   stream.Transform.call(this)
 
+  this._destroyed = false
   this._missing = 0
   this._message = null
   this._limit = opts && opts.limit || 0
@@ -45,7 +46,7 @@ Decoder.prototype._parseLength = function (data, offset) {
 }
 
 Decoder.prototype._prefixError = function (data) {
-  this.emit('error', new Error('Message is larger than max length'))
+  this.destroy(new Error('Message is larger than max length'))
   return data.length
 }
 
@@ -78,12 +79,19 @@ Decoder.prototype._parseMessage = function (data, offset) {
 Decoder.prototype._transform = function (data, enc, cb) {
   var offset = 0
 
-  while (offset < data.length) {
+  while (!this._destroyed && offset < data.length) {
     if (this._missing) offset = this._parseMessage(data, offset)
     else offset = this._parseLength(data, offset)
   }
 
   cb()
+}
+
+Decoder.prototype.destroy = function (err) {
+  if (this._destroyed) return
+  this._destroyed = true
+  if (err) this.emit('error', err)
+  this.emit('close')
 }
 
 module.exports = Decoder

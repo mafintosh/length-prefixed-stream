@@ -9,11 +9,14 @@ var used = 0
 var Encoder = function () {
   if (!(this instanceof Encoder)) return new Encoder()
   stream.Transform.call(this)
+  this._destroyed = false
 }
 
 util.inherits(Encoder, stream.Transform)
 
 Encoder.prototype._transform = function (data, enc, cb) {
+  if (this._destroyed) return cb()
+
   varint.encode(data.length, pool, used)
   used += varint.encode.bytes
 
@@ -26,6 +29,13 @@ Encoder.prototype._transform = function (data, enc, cb) {
   }
 
   cb()
+}
+
+Encoder.prototype.destroy = function (err) {
+  if (this._destroyed) return
+  this._destroyed = true
+  if (err) this.emit('error', err)
+  this.emit('close')
 }
 
 module.exports = Encoder
