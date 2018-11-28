@@ -238,7 +238,7 @@ tape('overflow varint pool', function (t) {
 })
 
 tape('message limit', function (t) {
-  var d = lpstream.decode({limit: 10})
+  var d = lpstream.decode({ limit: 10 })
 
   d.on('error', function (err) {
     t.ok(err, 'should error')
@@ -255,7 +255,7 @@ tape('allow empty', function (t) {
     t.fail('should not emit empty buffers')
   })
   d.on('end', function () {
-    d = lpstream.decode({allowEmpty: true})
+    d = lpstream.decode({ allowEmpty: true })
     d.on('data', function (data) {
       t.same(data, bufferAlloc(0), 'empty buffer')
       t.end()
