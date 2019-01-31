@@ -31,11 +31,12 @@ Encoder.prototype._transform = function (data, enc, cb) {
   cb()
 }
 
-Encoder.prototype.destroy = function (err) {
-  if (this._destroyed) return
+Encoder.prototype.destroy = function (err, callback) {
+  if (this._destroyed) return callback && callback()
   this._destroyed = true
   if (err) this.emit('error', err)
   this.emit('close')
+  callback && callback()
 }
 
 module.exports = Encoder

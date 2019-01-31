@@ -64,6 +64,23 @@ tape('encode -> decode twice', function (t) {
   e.pipe(d)
 })
 
+tape('async iterator, encode -> decode twice', async function (t) {
+  t.plan(2)
+
+  var e = lpstream.encode()
+  var d = lpstream.decode({ allowEmpty: true })
+
+  var expects = ['hello world', 'hola mundo']
+
+  e.write('hello world')
+  e.write('hola mundo')
+  e.pipe(d)
+
+  for await (const data of d) {
+    t.same(data.toString(), expects.shift())
+  }
+})
+
 tape('encode -> decode storm', function (t) {
   t.plan(50)
 
@@ -188,6 +205,28 @@ tape('ultra chunked encode -> decode storm', function (t) {
   })
 
   e.pipe(chunk(true)).pipe(d)
+})
+
+tape('async iterator, ultra chunked encode -> decode storm', async function (t) {
+  t.plan(50)
+
+  var e = lpstream.encode()
+  var d = lpstream.decode({ allowEmpty: true })
+  var expects = []
+
+  for (var i = 0; i < 50; i++) {
+    expects.push(bufferAlloc(50))
+  }
+
+  expects.forEach(function (b) {
+    e.write(b)
+  })
+
+  e.pipe(chunk(true)).pipe(d)
+
+  for await (const data of d) {
+    t.same(data, expects.shift())
+  }
 })
 
 tape('multibyte varints', function (t) {
