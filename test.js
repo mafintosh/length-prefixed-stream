@@ -3,8 +3,6 @@ var through = require('through2')
 var concat = require('concat-stream')
 var from = require('from2')
 var lpstream = require('./')
-var bufferAlloc = require('buffer-alloc-unsafe')
-var bufferFrom = require('buffer-from')
 
 var chunk = function (ultra) {
   return through(function (data, enc, cb) {
@@ -72,7 +70,7 @@ tape('encode -> decode storm', function (t) {
   var expects = []
 
   for (var i = 0; i < 50; i++) {
-    expects.push(bufferAlloc(50))
+    expects.push(Buffer.allocUnsafe(50))
   }
 
   d.on('data', function (data) {
@@ -124,7 +122,7 @@ tape('chunked encode -> decode storm', function (t) {
   var expects = []
 
   for (var i = 0; i < 50; i++) {
-    expects.push(bufferAlloc(50))
+    expects.push(Buffer.allocUnsafe(50))
   }
 
   d.on('data', function (data) {
@@ -176,7 +174,7 @@ tape('ultra chunked encode -> decode storm', function (t) {
   var expects = []
 
   for (var i = 0; i < 50; i++) {
-    expects.push(bufferAlloc(50))
+    expects.push(Buffer.allocUnsafe(50))
   }
 
   d.on('data', function (data) {
@@ -198,7 +196,7 @@ tape('multibyte varints', function (t) {
   var expects = []
 
   for (var i = 0; i < 5; i++) {
-    expects.push(bufferAlloc(64 * 1024))
+    expects.push(Buffer.allocUnsafe(64 * 1024))
   }
 
   d.on('data', function (data) {
@@ -216,7 +214,7 @@ tape('overflow varint pool', function (t) {
   t.plan(4000)
 
   var i = 0
-  var buf = bufferAlloc(64 * 1024)
+  var buf = Buffer.allocUnsafe(64 * 1024)
   var e = lpstream.encode()
   var d = lpstream.decode()
 
@@ -238,14 +236,14 @@ tape('overflow varint pool', function (t) {
 })
 
 tape('message limit', function (t) {
-  var d = lpstream.decode({limit: 10})
+  var d = lpstream.decode({ limit: 10 })
 
   d.on('error', function (err) {
     t.ok(err, 'should error')
     t.end()
   })
 
-  d.write(bufferFrom('zzzzzzzzzzzzzz'))
+  d.write(Buffer.from('zzzzzzzzzzzzzz'))
 })
 
 tape('allow empty', function (t) {
@@ -255,15 +253,15 @@ tape('allow empty', function (t) {
     t.fail('should not emit empty buffers')
   })
   d.on('end', function () {
-    d = lpstream.decode({allowEmpty: true})
+    d = lpstream.decode({ allowEmpty: true })
     d.on('data', function (data) {
-      t.same(data, bufferAlloc(0), 'empty buffer')
+      t.same(data, Buffer.alloc(0), 'empty buffer')
       t.end()
     })
-    d.write(bufferFrom([0]))
+    d.write(Buffer.from([0]))
     d.end()
   })
 
-  d.write(bufferFrom([0]))
+  d.write(Buffer.from([0]))
   d.end()
 })

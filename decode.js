@@ -1,7 +1,6 @@
 var varint = require('varint')
 var stream = require('readable-stream')
-var util = require('util')
-var bufferAlloc = require('buffer-alloc-unsafe')
+var inherits = require('inherits')
 
 var Decoder = function (opts) {
   if (!(this instanceof Decoder)) return new Decoder(opts)
@@ -10,9 +9,9 @@ var Decoder = function (opts) {
   this._destroyed = false
   this._missing = 0
   this._message = null
-  this._limit = opts && opts.limit || 0
+  this._limit = (opts && opts.limit) || 0
   this._allowEmpty = !!(opts && opts.allowEmpty)
-  this._prefix = bufferAlloc(this._limit ? varint.encodingLength(this._limit) : 100)
+  this._prefix = Buffer.allocUnsafe(this._limit ? varint.encodingLength(this._limit) : 100)
   this._ptr = 0
 
   if (this._allowEmpty) {
@@ -21,7 +20,7 @@ var Decoder = function (opts) {
   }
 }
 
-util.inherits(Decoder, stream.Transform)
+inherits(Decoder, stream.Transform)
 
 Decoder.prototype._push = function (message) {
   this._ptr = 0
@@ -37,7 +36,7 @@ Decoder.prototype._parseLength = function (data, offset) {
     if (!(data[offset] & 0x80)) {
       this._missing = varint.decode(this._prefix)
       if (this._limit && this._missing > this._limit) return this._prefixError(data)
-      if (!this._missing && this._allowEmpty) this._push(bufferAlloc(0))
+      if (!this._missing && this._allowEmpty) this._push(Buffer.alloc(0))
       this._ptr = 0
       return offset + 1
     }
@@ -59,7 +58,7 @@ Decoder.prototype._parseMessage = function (data, offset) {
       this._push(data.slice(offset, offset + missing))
       return offset + missing
     }
-    this._message = bufferAlloc(missing)
+    this._message = Buffer.allocUnsafe(missing)
   }
 
   // TODO: add opt-in "partial mode" to completely avoid copys
