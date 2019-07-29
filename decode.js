@@ -86,11 +86,10 @@ Decoder.prototype._transform = function (data, enc, cb) {
   cb()
 }
 
-Decoder.prototype.destroy = function (err) {
-  if (this._destroyed) return
+Decoder.prototype._destroy = function (err, cb) {
+  if (this._destroyed) return cb(err)
   this._destroyed = true
-  if (err) this.emit('error', err)
-  this.emit('close')
+  cb(err)
 }
 
 module.exports = Decoder
