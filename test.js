@@ -265,3 +265,27 @@ tape('allow empty', function (t) {
   d.write(Buffer.from([0]))
   d.end()
 })
+
+tape('decode progress', function (t) {
+  var e = lpstream.encode()
+  var d = lpstream.decode()
+
+  var expects = ['hello world', 'hola mundo']
+  var progress = 0
+
+  d.on('data', function (data) {
+    t.same(data.toString(), expects.shift())
+    progress = 0
+    if (!expects.length) t.end()
+  })
+
+  e.write('hello world')
+  e.write('hola mundo')
+
+  d.on('progress', function (data) {
+    t.equal(data.total, expects[0].length)
+    t.equal(data.progress, ++progress)
+  })
+
+  e.pipe(chunk(true)).pipe(d)
+})
